@@ -1,19 +1,17 @@
-from PyQt5.QtWidgets import (QWidget, QMessageBox, QDesktopWidget)
+from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QDesktopWidget
 from PyQt5.QtGui import QIcon
 
 
-class Example(QWidget):
+class Example(QMainWindow):
 
     def __init__(self):
         super().__init__()
         self.initUI()
 
     def initUI(self):
-
-        self.resize(2000, 1000)
-        self.center()
-        self.setWindowTitle('小信题库')
-        self.setWindowIcon(QIcon('./pictures/shixiaoxin.jpg'))
+        self.statusBar().showMessage('Ready')
+        self.setGeometry(300, 300, 250, 150)
+        self.setWindowTitle('Statusbar')
         self.show()
 
     """
