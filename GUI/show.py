@@ -12,13 +12,16 @@ class Example(QWidget):
 
         self.resize(2000, 1000)
         self.center()
-        self.setWindowTitle('Test')
+        self.setWindowTitle('小信题库')
         self.setWindowIcon(QIcon('./pictures/shixiaoxin.jpg'))
         self.show()
 
+    """
+    when close, remind people whether he want to leave
+    """
     def closeEvent(self, event):
         reply = QMessageBox.question(self, 'Message',
-                                     "Are you sure to quit?", QMessageBox.Yes |
+                                     "你确定要退出吗？", QMessageBox.Yes |
                                      QMessageBox.No, QMessageBox.No)
 
         if reply == QMessageBox.Yes:
@@ -29,7 +32,6 @@ class Example(QWidget):
     """
     set the windows into the middle
     """
-
     def center(self):
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
