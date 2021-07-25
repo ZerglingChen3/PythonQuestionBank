@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox, QDesktopWidget
 from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import Qt
 
 
 class Example(QMainWindow):
@@ -17,6 +18,7 @@ class Example(QMainWindow):
     """
     when close, remind people whether he want to leave
     """
+
     def closeEvent(self, event):
         reply = QMessageBox.question(self, 'Message',
                                      "你确定要退出吗？", QMessageBox.Yes |
@@ -30,8 +32,17 @@ class Example(QMainWindow):
     """
     set the windows into the middle
     """
+
     def center(self):
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
+
+    '''
+    when press the key, event happened
+    '''
+
+    def keyPressEvent(self, e):
+        if e.key() == Qt.Key_Escape:
+            self.close()
