@@ -4,7 +4,9 @@ from PyQt5.QtGui import *
 from .Surface import Surface
 
 # for test before data base
-name_dict = {"admin":"19373469"}
+name_dict = {"admin": "19373469"}
+global surface
+
 
 class loginSurface(Surface):
 
@@ -57,12 +59,10 @@ class loginSurface(Surface):
         self.pwdText.setContextMenuPolicy(Qt.NoContextMenu)
         self.pwdText.setEchoMode(QLineEdit.Password)
 
-
     def initUI(self):
         self.resize(960, 720)
         self.setWindowTitle('小信题库')
         self.setWindowIcon(QIcon('./pictures/shixiaoxin.jpg'))
-        self.show()
 
     """
     when close, remind people whether he want to leave
@@ -76,15 +76,13 @@ class loginSurface(Surface):
         account = self.unameText.text()
         password = self.pwdText.text()
 
-        print(account)
-        print(password)
         if account == "":
             QMessageBox.warning(self, '警告', "用户名不能为空，请重新输入！")
             return
         elif password == "":
             QMessageBox.warning(self, '警告', "密码不能为空，请重新输入！")
             return
-        elif password == "admin" and password == "19373469":
+        elif account == "admin" and password == "19373469":
             QMessageBox.information(self, '消息', "甜豆腐天下第一!")
         else:  # 需要连接数据库
             if account not in name_dict:
@@ -97,13 +95,15 @@ class loginSurface(Surface):
                     return
                 QMessageBox.information(self, '消息', "登录成功！")
 
-        print(account)
-        print(password)
+        print("#######################登录信息")
+        print("账户：  " + account)
+        print("密码：  " + password)
 
     def register_but_clicked(self):
-        register = registerSurface()
-        register.show()
         self.close()
+        global surface
+        surface = registerSurface()
+        surface.show()
 
 
 class registerSurface(Surface):
@@ -140,7 +140,6 @@ class registerSurface(Surface):
         self.resize(960, 720)
         self.setWindowTitle('小信题库')
         self.setWindowIcon(QIcon('./pictures/shixiaoxin.jpg'))
-        self.show()
 
     def initLabel(self):
         self.headLabel.setAlignment(Qt.AlignHCenter)
@@ -169,9 +168,10 @@ class registerSurface(Surface):
         self.register_but.clicked.connect(self.register_but_clicked)
 
     def back_but_clicked(self):
-        login = loginSurface()
-        login.show()
-        # self.close()
+        self.close()
+        global surface
+        surface = loginSurface()
+        surface.show()
 
     def register_but_clicked(self):
         account = self.unameText.text()
@@ -189,12 +189,14 @@ class registerSurface(Surface):
             return
         # 下面内容在数据库加载后需要修改！
         else:
-            if account not in name_dict:
+            if account in name_dict:
                 QMessageBox.warning(self, '警告', "用户名已经使用，请重新输入！")
                 return
             else:
-                QMessageBox.Information(self, '消息', "注册成功！")
-        login = loginSurface()
-        login.show()
-        self.close()
+                name_dict[account] = password
+                QMessageBox.information(self, '消息', "注册成功!")
 
+        global surface
+        surface = loginSurface()
+        surface.show()
+        self.close()
