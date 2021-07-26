@@ -13,6 +13,7 @@ class Surface(QWidget):
         self.main_widget.setLayout(self.main_layout)
         self.setLayout(self.main_layout)
         self.center()
+        self.paintEvent(self)
         # self.use_palette()
 
     """
@@ -58,3 +59,8 @@ class Surface(QWidget):
         window_pale.setBrush(QPalette.Background, QBrush(pixmap))
         self.setPalette(window_pale)
         """
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        pixmap = QPixmap("./pictures/login.jfif")
+        painter.drawPixmap(self.rect(), pixmap)

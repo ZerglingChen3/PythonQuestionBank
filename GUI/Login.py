@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from .Surface import Surface
+from .Problem import problemChooseSurface
 
 # for test before data base
 name_dict = {"admin": "19373469"}
@@ -49,7 +50,7 @@ class loginSurface(Surface):
 
     def initLabel(self):
         self.headLabel.setAlignment(Qt.AlignHCenter)
-        self.headLabel.setStyleSheet("color:rgb(40,40,255,255);"
+        self.headLabel.setStyleSheet("color:rgb(60,60,60,255);"
                                      "font-size:100px;"
                                      "font-weight:bold;"
                                      "font-family:Roman"
@@ -98,6 +99,10 @@ class loginSurface(Surface):
         print("#######################登录信息")
         print("账户：  " + account)
         print("密码：  " + password)
+        self.close()
+        global surface
+        surface = problemChooseSurface()
+        surface.show()
 
     def register_but_clicked(self):
         self.close()
@@ -143,7 +148,7 @@ class registerSurface(Surface):
 
     def initLabel(self):
         self.headLabel.setAlignment(Qt.AlignHCenter)
-        self.headLabel.setStyleSheet("color:rgb(40,40,255,255);"
+        self.headLabel.setStyleSheet("color:rgb(60,60,60,255);"
                                      "font-size:100px;"
                                      "font-weight:bold;"
                                      "font-family:Roman"
