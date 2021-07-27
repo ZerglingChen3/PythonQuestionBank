@@ -14,7 +14,6 @@ class Surface(QWidget):
         self.setLayout(self.main_layout)
         self.center()
         self.paintEvent(self)
-        # self.use_palette()
 
     """
     when close, remind people whether he want to leave
