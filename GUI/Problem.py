@@ -8,6 +8,8 @@ global surface
 
 
 class problemChooseSurface(Surface):
+    username = ""
+    personLabel = ""
 
     def __init__(self):
         super().__init__()
@@ -16,8 +18,15 @@ class problemChooseSurface(Surface):
         self.login_surface_layout = QGridLayout()
         self.login_surface_widget.setLayout(self.login_surface_layout)
 
+        self.button_widget = QWidget()
+        self.button_layout = QGridLayout()
+        self.button_widget.setLayout(self.button_layout)
+
+        self.information_widget = QWidget()
+        self.information_layout = QGridLayout()
+        self.information_widget.setLayout(self.information_layout)
+
         self.headLabel = QLabel("题目选择")
-        self.personLabel = QLabel("用户名：")
 
         self.type_box_widget = QGroupBox("请选择题目类型")
         self.type_box_widget.setFlat(False)
@@ -27,12 +36,8 @@ class problemChooseSurface(Surface):
         self.checkBox2 = QCheckBox("多选题")
         self.checkBox3 = QCheckBox("简答题")
 
-        self.num_box_widget = QGroupBox("请输入题目数量")
+        self.num_box_widget = QGroupBox("题目数量")
         self.num_box_layout = QHBoxLayout()
-
-        self.button_widget = QWidget()
-        self.button_layout = QGridLayout()
-        self.button_widget.setLayout(self.button_layout)
 
         self.num_text = QSpinBox()
         self.num_text.setMinimum(0)
@@ -112,3 +117,10 @@ class problemChooseSurface(Surface):
         global surface
         surface = loginSurface()
         surface.show()
+
+    def receive_nameSignal(self, name):
+        print("transform: " + str(name))
+        self.username = name
+        self.personLabel = QLabel("用户名：" + str(self.username))
+        self.information_layout.addWidget(self.personLabel, 0, 0)
+        self.main_layout.addWidget(self.information_widget, 1, 5, 1, 3)

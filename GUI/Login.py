@@ -12,6 +12,7 @@ global surface
 
 
 class loginSurface(Surface):
+    nameSignal = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
@@ -101,10 +102,14 @@ class loginSurface(Surface):
         print("#######################登录信息")
         print("账户：  " + account)
         print("密码：  " + password)
-        self.close()
+
         global surface
         surface = problemChooseSurface()
+        self.nameSignal.connect(surface.receive_nameSignal)
+        self.nameSignal.emit(account)
         surface.show()
+
+        self.close()
 
     def register_but_clicked(self):
         self.close()
