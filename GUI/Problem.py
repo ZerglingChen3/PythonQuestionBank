@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from .Surface import Surface
+import pandas as pd
 
 # recode the surface
 global surface
@@ -45,6 +46,7 @@ class problemChooseSurface(Surface):
 
         self.reset_but = QPushButton("重置")
         self.ok_but = QPushButton("确定")
+        self.logout_but = QPushButton("注销")
 
         self.initPos()
         self.initLabel()
@@ -85,6 +87,7 @@ class problemChooseSurface(Surface):
     def initEvent(self):
         self.reset_but.clicked.connect(self.reset_but_clicked)
         self.ok_but.clicked.connect(self.ok_but_clicked)
+        self.logout_but.clicked.connect(self.logout_but_clicked)
 
     def reset_but_clicked(self):
         self.checkBox1.setChecked(False)
@@ -104,6 +107,11 @@ class problemChooseSurface(Surface):
         elif value == 0:
             QMessageBox.warning(self, '警告', "你没有选任何的题目！")
             return
+
+        file = "./data/problem.xlsx"
+        data = pd.read_excel(file, sheet_name="单选题")
+        print(data)
+
         print("#######################题目信息")
         if choose1:
             print("我们有判断题~")
@@ -118,9 +126,27 @@ class problemChooseSurface(Surface):
         surface = loginSurface()
         surface.show()
 
+    def logout_but_clicked(self):
+        QMessageBox.information(self, '提醒', "欢迎您再使用小信题库！")
+        from .Login import loginSurface
+        global surface
+        surface = loginSurface()
+        surface.show()
+        self.close()
+
     def receive_nameSignal(self, name):
         # print("transform: " + str(name))
         self.username = name
         self.personLabel = QLabel("用户名：" + str(self.username))
         self.information_layout.addWidget(self.personLabel, 0, 0)
-        self.main_layout.addWidget(self.information_widget, 1, 5, 1, 3)
+        self.information_layout.addWidget(self.logout_but, 1, 0)
+        self.main_layout.addWidget(self.information_widget, 1, 5, 1, 2)
+
+
+class problemSurface(Surface):
+
+    def __init__(self):
+        super().__init__()
+
+        self.login_surface_widget = QWidget()
+        self.login_surface_layout = QGridLayout()
