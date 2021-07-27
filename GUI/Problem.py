@@ -119,7 +119,7 @@ class problemChooseSurface(Surface):
         surface.show()
 
     def receive_nameSignal(self, name):
-        print("transform: " + str(name))
+        # print("transform: " + str(name))
         self.username = name
         self.personLabel = QLabel("用户名：" + str(self.username))
         self.information_layout.addWidget(self.personLabel, 0, 0)
