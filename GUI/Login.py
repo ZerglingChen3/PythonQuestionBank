@@ -3,6 +3,9 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from .surface import Surface
 from .problem import problemChooseSurface
+from model import list as ls
+from model import person as ops
+from manage import person as nps
 
 # for test before data base
 name_dict = {"admin": "19373469"}
@@ -86,18 +89,22 @@ class loginSurface(Surface):
         elif password == "":
             QMessageBox.warning(self, '警告', "密码不能为空，请重新输入！")
             return
-        elif account == "admin" and password == "19373469":
-            QMessageBox.information(self, '消息', "甜豆腐天下第一!")
         else:  # 需要连接数据库
-            if account not in name_dict:
+            find_person = False
+            for user in ls.user_list:
+                if str(user.getName()) == account:
+                    find_person = True
+                    if str(user.getPassword()) != password:
+                        QMessageBox.warning(self, '警告', "用户名密码不匹配，请重新输入！")
+                        return
+                    if str(user.getPermission()) == "admin":
+                        QMessageBox.information(self, '消息', "甜豆腐天下第一！")
+                    else:
+                        QMessageBox.information(self, '消息', "登录成功！")
+                    break
+            if not find_person:
                 QMessageBox.warning(self, '警告', "用户名不存在，请重新输入！")
                 return
-            else:
-                check = name_dict[account]
-                if check != password:
-                    QMessageBox.warning(self, '警告', "用户名密码不匹配，请重新输入！")
-                    return
-                QMessageBox.information(self, '消息', "登录成功！")
 
         print("#######################登录信息")
         print("账户：  " + account)
@@ -199,14 +206,14 @@ class registerSurface(Surface):
         elif password != password_again:
             QMessageBox.warning(self, '警告', "确认密码不正确，请重新输入！")
             return
-        # 下面内容在数据库加载后需要修改！
         else:
-            if account in name_dict:
-                QMessageBox.warning(self, '警告', "用户名已经使用，请重新输入！")
-                return
-            else:
-                name_dict[account] = password
-                QMessageBox.information(self, '消息', "注册成功!")
+            for user in ls.user_list:
+                if str(user.getName()) == account:
+                    QMessageBox.warning(self, '警告', "用户名已经使用，请重新输入！")
+                    return
+            user = ops.person(account, password, "user")
+            nps.appendPerson(user)
+            QMessageBox.information(self, '消息', "注册成功!")
 
         global surface
         surface = loginSurface()
