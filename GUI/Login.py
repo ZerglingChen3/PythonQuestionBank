@@ -1,8 +1,8 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
-from .Surface import Surface
-from .Problem import problemChooseSurface
+from .surface import Surface
+from .problem import problemChooseSurface
 
 # for test before data base
 name_dict = {"admin": "19373469"}
