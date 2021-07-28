@@ -1,3 +1,4 @@
 /.idea
 /GUI/__pycache__/
 /model/problem
+/initdata/__pycache__/
