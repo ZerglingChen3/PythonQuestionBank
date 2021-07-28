@@ -1,8 +1,6 @@
-from model import person as ops
 from model import list as ls
 from manage import initdata as init
 import pandas as pd
-import pandas.io.formats.excel
 
 
 def appendPerson(new_person):
