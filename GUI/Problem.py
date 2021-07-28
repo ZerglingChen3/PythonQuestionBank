@@ -1,8 +1,10 @@
+import random
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from .surface import Surface
-import pandas as pd
+from model import list as ls
+from model import problem as pr
 
 # recode the surface
 global surface
@@ -11,6 +13,7 @@ global surface
 class problemChooseSurface(Surface):
     username = ""
     personLabel = ""
+    nameSignal = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
@@ -33,8 +36,8 @@ class problemChooseSurface(Surface):
         self.type_box_widget.setFlat(False)
         self.type_box_layout = QHBoxLayout()
 
-        self.checkBox1 = QCheckBox("判断题")
-        self.checkBox2 = QCheckBox("多选题")
+        self.checkBox1 = QCheckBox("单选题")
+        self.checkBox2 = QCheckBox("判断题")
         self.checkBox3 = QCheckBox("简答题")
 
         self.num_box_widget = QGroupBox("题目数量")
@@ -42,7 +45,10 @@ class problemChooseSurface(Surface):
 
         self.num_text = QSpinBox()
         self.num_text.setMinimum(0)
-        self.num_text.setMaximum(100)  # this need to read from the data base
+        prob_cnt = len(ls.problem_list["单选题"]) + \
+                   len(ls.problem_list["判断题"]) + \
+                   len(ls.problem_list["简答题"])
+        self.num_text.setMaximum(prob_cnt)
 
         self.reset_but = QPushButton("重置")
         self.ok_but = QPushButton("确定")
@@ -107,24 +113,42 @@ class problemChooseSurface(Surface):
         elif value == 0:
             QMessageBox.warning(self, '警告', "你没有选任何的题目！")
             return
+        prob_cnt = choose1 * len(ls.problem_list["单选题"]) + \
+                   choose2 * len(ls.problem_list["判断题"]) + \
+                   choose3 * len(ls.problem_list["简答题"])
 
-        file = "./data/problem.xlsx"
-        data = pd.read_excel(file, sheet_name="单选题")
-        print(data)
+        if value > prob_cnt:
+            QMessageBox.warning(self, '警告', "你选择的题目数量过多！")
+            return
 
         print("#######################题目信息")
+        ls.choose_problem_list.clear()
         if choose1:
-            print("我们有判断题~")
+            ls.choose_problem_list.extend(ls.problem_list["单选题"])
+            print("我们有单选题~")
         if choose2:
-            print("我们有多选题~")
+            ls.choose_problem_list.extend(ls.problem_list["判断题"])
+            print("我们有判断题~")
         if choose3:
+            ls.choose_problem_list.extend(ls.problem_list["简答题"])
             print("我们有简答题~")
+        random.shuffle(ls.choose_problem_list)
+        ls.choose_problem_list = ls.choose_problem_list[0:value]
         print("我们的题目数量是：" + str(value))
-        self.close()
-        from .login import loginSurface
+
+        ls.choose_problem_show_list.clear()
+        for i in range(len(ls.choose_problem_list)):
+            pro = ls.choose_problem_list[i]
+            problem_show = pr.problemShow(pro, i)
+            ls.choose_problem_show_list.append(problem_show)
+
+
         global surface
-        surface = loginSurface()
+        surface = problemSurface()
+        self.nameSignal.connect(surface.receive_nameSignal)
+        self.nameSignal.emit(self.username)
         surface.show()
+        self.close()
 
     def logout_but_clicked(self):
         QMessageBox.information(self, '提醒', "欢迎您再使用小信题库！")
@@ -149,9 +173,34 @@ class problemSurface(Surface):
     def __init__(self):
         super().__init__()
 
+        self.information_widget = QWidget()
+        self.information_layout = QGridLayout()
+        self.information_widget.setLayout(self.information_layout)
+
+        self.headLabel = QLabel("")
+
+        self.logout_but = QPushButton("注销")
+
+        self.initPos()
+        self.initUI()
+
+    def initPos(self):
+        self.main_layout.addWidget(self.headLabel, 0, 0, 100, 100)
+
+        start = 0
+        for i in range(len(ls.choose_problem_show_list)):
+            pro_box = ls.choose_problem_show_list[i].getBoxWidget()
+            self.main_layout.addWidget(pro_box, start, 0, 10, 6)
+            start += 10
+
     def receive_nameSignal(self, name):
         self.username = name
         self.personLabel = QLabel("用户名：" + str(self.username))
         self.information_layout.addWidget(self.personLabel, 0, 0)
         self.information_layout.addWidget(self.logout_but, 1, 0)
-        self.main_layout.addWidget(self.information_widget, 1, 5, 1, 2)
+        self.main_layout.addWidget(self.information_widget, 0, 6, 2, 2)
+
+    def initUI(self):
+        self.resize(1440, 1080)
+        self.setWindowTitle('小信题库')
+        self.setWindowIcon(QIcon('./pictures/shixiaoxin.jpg'))

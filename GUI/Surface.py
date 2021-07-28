@@ -1,6 +1,5 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-from PyQt5.QtGui import *
 
 
 class Surface(QWidget):
@@ -13,7 +12,6 @@ class Surface(QWidget):
         self.main_widget.setLayout(self.main_layout)
         self.setLayout(self.main_layout)
         self.center()
-        self.paintEvent(self)
 
     """
     when close, remind people whether he want to leave
@@ -60,6 +58,8 @@ class Surface(QWidget):
         """
 
     def paintEvent(self, event):
+        """
         painter = QPainter(self)
         pixmap = QPixmap("./pictures/login.jfif")
         painter.drawPixmap(self.rect(), pixmap)
+        """
