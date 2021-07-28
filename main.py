@@ -1,8 +1,10 @@
 import sys
 from PyQt5.QtWidgets import QApplication
-from GUI import login
+from gui import login
+from initdata import initdata
 
 if __name__ == '__main__':
+    initdata.user_init()
     app = QApplication(sys.argv)
     ex = login.loginSurface()
     ex.show()

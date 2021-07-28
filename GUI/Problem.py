@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
-from .Surface import Surface
+from .surface import Surface
 import pandas as pd
 
 # recode the surface
@@ -121,21 +121,20 @@ class problemChooseSurface(Surface):
             print("我们有简答题~")
         print("我们的题目数量是：" + str(value))
         self.close()
-        from .Login import loginSurface
+        from .login import loginSurface
         global surface
         surface = loginSurface()
         surface.show()
 
     def logout_but_clicked(self):
         QMessageBox.information(self, '提醒', "欢迎您再使用小信题库！")
-        from .Login import loginSurface
+        from .login import loginSurface
         global surface
         surface = loginSurface()
         surface.show()
         self.close()
 
     def receive_nameSignal(self, name):
-        # print("transform: " + str(name))
         self.username = name
         self.personLabel = QLabel("用户名：" + str(self.username))
         self.information_layout.addWidget(self.personLabel, 0, 0)
@@ -144,9 +143,15 @@ class problemChooseSurface(Surface):
 
 
 class problemSurface(Surface):
+    username = ""
+    personLabel = ""
 
     def __init__(self):
         super().__init__()
 
-        self.login_surface_widget = QWidget()
-        self.login_surface_layout = QGridLayout()
+    def receive_nameSignal(self, name):
+        self.username = name
+        self.personLabel = QLabel("用户名：" + str(self.username))
+        self.information_layout.addWidget(self.personLabel, 0, 0)
+        self.information_layout.addWidget(self.logout_but, 1, 0)
+        self.main_layout.addWidget(self.information_widget, 1, 5, 1, 2)
