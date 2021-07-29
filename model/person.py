@@ -1,7 +1,4 @@
 class person:
-    __username = ""
-    __password = ""
-    __permission = ""
 
     def __init__(self, username, password, permission):
         self.__username = username

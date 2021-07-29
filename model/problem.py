@@ -40,6 +40,17 @@ class problemShow:
                 widget = QRadioButton(ch + '. ' + pro.getOpt(num - ord('A')))
                 self.__option[ch] = widget
                 self.__box_layout.addWidget(widget, num + 1 - ord('A'))
+        elif pro.getType() == "判断题":
+            widget_true = QRadioButton("正确")
+            widget_false = QRadioButton("错误")
+            self.__option["A"] = widget_true
+            self.__option["B"] = widget_false
+            self.__box_layout.addWidget(widget_true, 0)
+            self.__box_layout.addWidget(widget_false, 1)
+        elif pro.getType() == "简答题":
+            widget_text = QTextEdit("")
+            self.__option["A"] = widget_text
+            self.__box_layout.addWidget(widget_text, 0)
 
     def getBoxWidget(self):
         return self.__box_widget

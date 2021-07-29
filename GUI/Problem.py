@@ -185,7 +185,7 @@ class problemSurface(Surface):
         self.initUI()
 
     def initPos(self):
-        self.main_layout.addWidget(self.headLabel, 0, 0, 100, 100)
+        # self.main_layout.addWidget(self.headLabel, 0, 0, 100, 100)
 
         start = 0
         for i in range(len(ls.choose_problem_show_list)):
@@ -201,6 +201,6 @@ class problemSurface(Surface):
         self.main_layout.addWidget(self.information_widget, 0, 6, 2, 2)
 
     def initUI(self):
-        self.resize(1440, 1080)
+        self.resize(1080, 960)
         self.setWindowTitle('小信题库')
         self.setWindowIcon(QIcon('./pictures/shixiaoxin.jpg'))
