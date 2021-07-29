@@ -233,6 +233,7 @@ class problemSurface(Surface):
     def initEvent(self):
         self.back_but.clicked.connect(self.back_but_click)
         self.front_but.clicked.connect(self.front_but_click)
+        self.logout_but.clicked.connect(self.logout_but_clicked)
 
     def initUI(self):
         self.resize(1080, 960)
@@ -261,4 +262,11 @@ class problemSurface(Surface):
         global surface
         surface = self.back_surface
         self.close()
+        surface.show()
+
+    def logout_but_clicked(self):
+        from .login import loginSurface
+        self.close()
+        global surface
+        surface = loginSurface()
         surface.show()
