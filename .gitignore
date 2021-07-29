@@ -1,4 +1,4 @@
 /.idea
-/GUI/__pycache__/
+/gui/__pycache__/
 /model/__pycache__/
 /manage/__pycache__/
