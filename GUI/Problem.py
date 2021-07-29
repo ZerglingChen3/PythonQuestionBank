@@ -144,6 +144,7 @@ class problemChooseSurface(Surface):
             problem_show = pr.problemShow(pro, i)
             ls.choose_problem_show_list.append(problem_show)
 
+        ls.choose_problem_surface_list.clear()
         i = 0
         while i < value:
             pro_list = []
@@ -199,6 +200,8 @@ class problemSurface(Surface):
         self.logout_but = QPushButton("注销")
         self.back_but = QPushButton("上一页")
         self.front_but = QPushButton("下一页")
+        self.submit_but = QPushButton("提交")
+        self.return_but = QPushButton("返回")
 
         self.pro_list = pro_list
 
@@ -220,8 +223,9 @@ class problemSurface(Surface):
             self.main_layout.addWidget(pro_box, start, 0, 10, 6)
             start += 10
         self.button_layout.addWidget(self.back_but, 0, 0)
-        self.button_layout.addWidget(self.front_but, 0, 2)
-        self.main_layout.addWidget(self.button_widget, start, 3)
+        self.button_layout.addWidget(self.front_but, 0, 1)
+        self.button_layout.addWidget(self.submit_but, 0, 2)
+        self.main_layout.addWidget(self.button_widget, start, 2)
 
     def receive_nameSignal(self, name):
         self.username = name
@@ -234,6 +238,9 @@ class problemSurface(Surface):
         self.back_but.clicked.connect(self.back_but_click)
         self.front_but.clicked.connect(self.front_but_click)
         self.logout_but.clicked.connect(self.logout_but_clicked)
+        self.submit_but.clicked.connect(self.submit_but_clicked)
+        self.return_but.clicked.connect(self.return_but_clicked)
+
 
     def initUI(self):
         self.resize(1080, 960)
@@ -269,4 +276,40 @@ class problemSurface(Surface):
         self.close()
         global surface
         surface = loginSurface()
+        surface.show()
+
+    def return_but_clicked(self):
+        self.close()
+        global surface
+        surface = problemChooseSurface()
+        surface.show()
+
+    def changeButton(self):
+        self.submit_but.setParent(None)
+        self.button_layout.addWidget(self.return_but, 0, 2)
+
+    def submit_but_clicked(self):
+        sum_short = 0  # the sum of short answer problem
+        sum_tot = 0
+        sum_correct = 0
+        for pro in ls.choose_problem_show_list:
+            if pro.getProType() == "简答题":
+                sum_short += 1
+            else:
+                sum_tot += 1
+                if pro.checkCorrect():
+                    sum_correct += 1
+        print("#######################答题情况")
+        print("简答题数量：" + str(sum_short))
+        print("非简答题数量：" + str(sum_tot))
+        print("非简答题正确数量：" + str(sum_correct))
+        self.close()
+
+        for pro in ls.choose_problem_show_list:
+            pro.resultShow()
+        for sf in ls.choose_problem_surface_list:
+            sf.changeButton()
+
+        global surface
+        surface = ls.choose_problem_surface_list[0]
         surface.show()
