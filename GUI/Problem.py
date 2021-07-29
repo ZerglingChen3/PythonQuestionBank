@@ -9,6 +9,8 @@ from model import problem as pr
 # recode the surface
 global surface
 
+MAX_PROBLEM = 4
+
 
 class problemChooseSurface(Surface):
     username = ""
@@ -125,16 +127,16 @@ class problemChooseSurface(Surface):
         ls.choose_problem_list.clear()
         if choose1:
             ls.choose_problem_list.extend(ls.problem_list["单选题"])
-            print("我们有单选题~")
+            print("有单选题!")
         if choose2:
             ls.choose_problem_list.extend(ls.problem_list["判断题"])
-            print("我们有判断题~")
+            print("有判断题!")
         if choose3:
             ls.choose_problem_list.extend(ls.problem_list["简答题"])
-            print("我们有简答题~")
+            print("有简答题!")
         random.shuffle(ls.choose_problem_list)
         ls.choose_problem_list = ls.choose_problem_list[0:value]
-        print("我们的题目数量是：" + str(value))
+        print("题目数量是：" + str(value))
 
         ls.choose_problem_show_list.clear()
         for i in range(len(ls.choose_problem_list)):
@@ -142,11 +144,28 @@ class problemChooseSurface(Surface):
             problem_show = pr.problemShow(pro, i)
             ls.choose_problem_show_list.append(problem_show)
 
+        i = 0
+        while i < value:
+            pro_list = []
+            j = 0
+            while i < value and j < MAX_PROBLEM:
+                pro_list.append(ls.choose_problem_show_list[i])
+                i += 1
+                j += 1
+            sf = problemSurface(pro_list)
+            self.nameSignal.connect(sf.receive_nameSignal)
+            ls.choose_problem_surface_list.append(sf)
+
+        for i in range(len(ls.choose_problem_surface_list) - 1):
+            ls.choose_problem_surface_list[i].linkFront(ls.choose_problem_surface_list[i + 1])
+
+        for i in range(1, len(ls.choose_problem_surface_list)):
+            ls.choose_problem_surface_list[i].linkBack(ls.choose_problem_surface_list[i - 1])
+
+        self.nameSignal.emit(self.username)
 
         global surface
-        surface = problemSurface()
-        self.nameSignal.connect(surface.receive_nameSignal)
-        self.nameSignal.emit(self.username)
+        surface = ls.choose_problem_surface_list[0]
         surface.show()
         self.close()
 
@@ -167,10 +186,8 @@ class problemChooseSurface(Surface):
 
 
 class problemSurface(Surface):
-    username = ""
-    personLabel = ""
 
-    def __init__(self):
+    def __init__(self, pro_list):
         super().__init__()
 
         self.information_widget = QWidget()
@@ -180,18 +197,31 @@ class problemSurface(Surface):
         self.headLabel = QLabel("")
 
         self.logout_but = QPushButton("注销")
+        self.back_but = QPushButton("上一页")
+        self.front_but = QPushButton("下一页")
+
+        self.pro_list = pro_list
+
+        self.front_surface = None
+        self.back_surface = None
+
+        self.button_widget = QWidget()
+        self.button_layout = QGridLayout()
+        self.button_widget.setLayout(self.button_layout)
 
         self.initPos()
         self.initUI()
+        self.initEvent()
 
     def initPos(self):
-        # self.main_layout.addWidget(self.headLabel, 0, 0, 100, 100)
-
         start = 0
-        for i in range(len(ls.choose_problem_show_list)):
-            pro_box = ls.choose_problem_show_list[i].getBoxWidget()
+        for i in range(len(self.pro_list)):
+            pro_box = self.pro_list[i].getBoxWidget()
             self.main_layout.addWidget(pro_box, start, 0, 10, 6)
             start += 10
+        self.button_layout.addWidget(self.back_but, 0, 0)
+        self.button_layout.addWidget(self.front_but, 0, 2)
+        self.main_layout.addWidget(self.button_widget, start, 3)
 
     def receive_nameSignal(self, name):
         self.username = name
@@ -200,7 +230,35 @@ class problemSurface(Surface):
         self.information_layout.addWidget(self.logout_but, 1, 0)
         self.main_layout.addWidget(self.information_widget, 0, 6, 2, 2)
 
+    def initEvent(self):
+        self.back_but.clicked.connect(self.back_but_click)
+        self.front_but.clicked.connect(self.front_but_click)
+
     def initUI(self):
         self.resize(1080, 960)
         self.setWindowTitle('小信题库')
         self.setWindowIcon(QIcon('./pictures/shixiaoxin.jpg'))
+
+    def linkFront(self, front_surface):
+        self.front_surface = front_surface
+
+    def linkBack(self, back_surface):
+        self.back_surface = back_surface
+
+    def front_but_click(self):
+        if self.front_surface is None:
+            QMessageBox.information(self, '提醒', "已经是最后一页！")
+            return
+        global surface
+        surface = self.front_surface
+        self.close()
+        surface.show()
+
+    def back_but_click(self):
+        if self.back_surface is None:
+            QMessageBox.information(self, '提醒', "已经是第一页！")
+            return
+        global surface
+        surface = self.back_surface
+        self.close()
+        surface.show()

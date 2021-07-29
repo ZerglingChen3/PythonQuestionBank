@@ -28,7 +28,7 @@ class problem:
 class problemShow:
 
     def __init__(self, pro, pro_id):
-        self.__box_widget = QGroupBox()
+        self.__box_widget = QGroupBox(pro.getType())
         self.__box_layout = QVBoxLayout()
         self.__option = {}
         self.__box_widget.setLayout(self.__box_layout)
