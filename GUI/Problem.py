@@ -241,7 +241,6 @@ class problemSurface(Surface):
         self.submit_but.clicked.connect(self.submit_but_clicked)
         self.return_but.clicked.connect(self.return_but_clicked)
 
-
     def initUI(self):
         self.resize(1080, 960)
         self.setWindowTitle('小信题库')

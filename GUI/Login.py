@@ -6,6 +6,7 @@ from .problem import problemChooseSurface
 from model import list as ls
 from model import person as ops
 from manage import person as nps
+from manage import initdata as init
 
 # for test before data base
 name_dict = {"admin": "19373469"}
@@ -112,6 +113,8 @@ class loginSurface(Surface):
 
         global surface
         surface = problemChooseSurface()
+
+        # init.init_user(account)
         self.nameSignal.connect(surface.receive_nameSignal)
         self.nameSignal.emit(account)
         surface.show()
