@@ -292,12 +292,19 @@ class problemSurface(Surface):
         sum_tot = 0
         sum_correct = 0
         for pro in ls.choose_problem_show_list:
+            state = "correct"
             if pro.getProType() == "简答题":
                 sum_short += 1
+                state = "can_not_judge"
             else:
                 sum_tot += 1
                 if pro.checkCorrect():
                     sum_correct += 1
+                else:
+                    state = "wrong"
+            type_record = ls.problem_record[pro.getProType()]
+            type_record.addRecord(pro.getId(), state)
+
         print("#######################答题情况")
         print("简答题数量：" + str(sum_short))
         print("非简答题数量：" + str(sum_tot))
@@ -308,6 +315,9 @@ class problemSurface(Surface):
             pro.resultShow()
         for sf in ls.choose_problem_surface_list:
             sf.changeButton()
+
+        from manage import person as nps
+        nps.appendProblemRecord(self.username)
 
         global surface
         surface = ls.choose_problem_surface_list[0]

@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import *
 
 
 def setColor(widget, color):
-    widget.setStyleSheet("color:"+str(color))
+    widget.setStyleSheet("color:" + str(color))
 
 
 class problem:
@@ -24,6 +24,9 @@ class problem:
 
     def getDes(self):
         return self.__description
+
+    def getId(self):
+        return self.__id
 
     def getOpt(self, num):
         return str(self.__option[num])
@@ -62,6 +65,9 @@ class problemShow:
 
     def getBoxWidget(self):
         return self.__box_widget
+
+    def getId(self):
+        return self.__problem.getId()
 
     def getProType(self):
         return str(self.__problem.getType())
@@ -110,3 +116,60 @@ class problemShow:
             correct_answer = QLabel("标准答案：" + str(self.__problem.getAns()))
             self.__box_layout.addWidget(you_answer, 1)
             self.__box_layout.addWidget(correct_answer, 2)
+
+
+class problemRecord:
+
+    def __init__(self, pro_type, line):
+        self.__type = pro_type
+        self.__id = line[0]
+        self.__time = line[1]
+        self.__correct = line[2]
+        self.__rate = line[3]
+
+    def getId(self):
+        return str(self.__id)
+
+    def addRecord(self, state):
+        self.__time += 1
+        if state == "correct":
+            self.__correct += 1
+        self.__rate = self.__correct / self.__time
+
+    def getFrame(self):
+        return [self.__id, self.__time, self.__correct, self.__rate]
+
+
+class typeRecord:
+
+    def __init__(self, pro_type):
+        self.__record = []
+        self.__type = pro_type
+
+    def initRecord(self, line):
+        pro = problemRecord(self.__type, line)
+        self.__record.append(pro)
+
+    def addRecord(self, pro_id, state):
+        for pro in self.__record:
+            if pro.getId() == str(pro_id):
+                pro.addRecord(state)
+                return
+        line = [pro_id, 0, 0, 0]
+        pro = problemRecord(self.__type, line)
+        self.__record.append(pro)
+        pro.addRecord(state)
+
+    def getType(self):
+        return self.__type
+
+    def getFrame(self):
+        from manage import person as ps
+        frame = {}
+        for head in ps.problem_record_list:
+            frame[head] = []
+        for pro in self.__record:
+            pro_frame = pro.getFrame()
+            for j in range(4):
+                frame[ps.problem_record_list[j]].append(pro_frame[j])
+        return frame

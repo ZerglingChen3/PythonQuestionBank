@@ -1,10 +1,13 @@
 import os
-
 from model import list as ls
 from manage import initdata as init
+from model import problem as pb
 import pandas as pd
 
 problem_type = ["单选题", "判断题", "简答题"]
+
+global problem_record_list
+problem_record_list = ["题号", "答题次数", "错误次数", "错误率"]
 
 
 def appendPerson(new_person):
@@ -19,6 +22,19 @@ def appendPerson(new_person):
 
 
 data_path = "./data/user/"
+
+
+def appendProblemRecord(name):
+    current_path = data_path + str(name)
+    current_excel = current_path + "/data.xlsx"
+    writer = pd.ExcelWriter(current_excel)
+    for type_record in problem_type:
+        frame = ls.problem_record[type_record].getFrame()
+        ds = pd.DataFrame(frame)
+        ds.to_excel(writer, sheet_name=type_record, index=False)
+
+    writer.save()
+    writer.close()
 
 
 def initDirectory(name):
@@ -40,6 +56,16 @@ def initExcel(name):
             ds.to_excel(writer, sheet_name=pro_type, index=False)
         writer.save()
         writer.close()
+
+    ls.problem_record.clear()
+    for pro_type in problem_type:
+        type_record = pb.typeRecord(pro_type)
+        ls.problem_record[pro_type] = type_record
+        sheet = pd.read_excel(current_excel, sheet_name=pro_type)
+        problem_cnt = sheet.shape[0]
+        for i in range(problem_cnt):
+            line = sheet.loc[i].values
+            type_record.initRecord(line)
 
 
 def initData(name):
