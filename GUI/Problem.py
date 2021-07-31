@@ -5,6 +5,8 @@ from PyQt5.QtGui import *
 from .surface import Surface
 from model import list as ls
 from model import problem as pr
+import matplotlib.pyplot as plt
+
 
 # recode the surface
 global surface
@@ -202,6 +204,7 @@ class problemSurface(Surface):
         self.front_but = QPushButton("下一页")
         self.submit_but = QPushButton("提交")
         self.return_but = QPushButton("返回")
+        self.user_but = QPushButton("个人信息")
 
         self.pro_list = pro_list
 
@@ -232,7 +235,8 @@ class problemSurface(Surface):
         self.personLabel = QLabel("用户名：" + str(self.username))
         self.information_layout.addWidget(self.personLabel, 0, 0)
         self.information_layout.addWidget(self.logout_but, 1, 0)
-        self.main_layout.addWidget(self.information_widget, 0, 6, 2, 2)
+        self.information_layout.addWidget(self.user_but, 2, 0)
+        self.main_layout.addWidget(self.information_widget, 0, 6, 3, 2)
 
     def initEvent(self):
         self.back_but.clicked.connect(self.back_but_click)
@@ -240,6 +244,7 @@ class problemSurface(Surface):
         self.logout_but.clicked.connect(self.logout_but_clicked)
         self.submit_but.clicked.connect(self.submit_but_clicked)
         self.return_but.clicked.connect(self.return_but_clicked)
+        self.user_but.clicked.connect(self.user_but_clicked)
 
     def initUI(self):
         self.resize(1080, 960)
@@ -281,6 +286,13 @@ class problemSurface(Surface):
         self.close()
         global surface
         surface = problemChooseSurface()
+        surface.show()
+
+    def user_but_clicked(self):
+        self.close()
+        from .user import userInformationSurface
+        global surface
+        surface = userInformationSurface()
         surface.show()
 
     def changeButton(self):
