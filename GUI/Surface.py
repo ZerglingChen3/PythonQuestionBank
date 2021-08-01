@@ -2,6 +2,20 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
 
+def getWidget():
+    widget = QWidget()
+    layout = QGridLayout()
+    widget.setLayout(layout)
+    return widget, layout
+
+
+def getGroup(name):
+    group = QGroupBox(name)
+    layout = QGridLayout()
+    group.setLayout(layout)
+    return group, layout
+
+
 class Surface(QWidget):
 
     def __init__(self):

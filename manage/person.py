@@ -21,6 +21,16 @@ def appendPerson(new_person):
     df.to_excel(init.user_path, index=False, header=True)
 
 
+def changePassword(username, password):
+    data = pd.read_excel(init.user_path)
+
+    data['密码'][data['姓名'] == username] = password
+
+    pd.DataFrame(data).to_excel(init.user_path, index=False, header=True)
+    for user in ls.user_list:
+        if user.getName() == username:
+            user.changePassword(password)
+
 data_path = "./data/user/"
 
 

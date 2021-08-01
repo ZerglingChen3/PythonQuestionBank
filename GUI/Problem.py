@@ -189,6 +189,9 @@ class problemChooseSurface(Surface):
 
 
 class problemSurface(Surface):
+    username = ""
+    personLabel = ""
+    nameSignal = pyqtSignal(str)
 
     def __init__(self, pro_list):
         super().__init__()
@@ -290,9 +293,11 @@ class problemSurface(Surface):
 
     def user_but_clicked(self):
         self.close()
-        from .user import userInformationSurface
+        from .user import userInformationChooseSurface
         global surface
-        surface = userInformationSurface()
+        surface = userInformationChooseSurface()
+        self.nameSignal.connect(surface.receive_nameSignal)
+        self.nameSignal.emit(self.username)
         surface.show()
 
     def changeButton(self):

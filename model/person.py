@@ -13,3 +13,7 @@ class person:
 
     def getPassword(self):
         return self.__password
+
+    def changePassword(self, password):
+        self.__password = password
+

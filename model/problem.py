@@ -139,16 +139,24 @@ class problemRecord:
     def getFrame(self):
         return [self.__id, self.__time, self.__correct, self.__rate]
 
+    def getTimes(self):
+        return self.__time, self.__correct
+
 
 class typeRecord:
 
     def __init__(self, pro_type):
         self.__record = []
         self.__type = pro_type
+        self.__time = 0
+        self.__correct = 0
 
     def initRecord(self, line):
         pro = problemRecord(self.__type, line)
         self.__record.append(pro)
+        time, correct = pro.getTimes()
+        self.__time += time
+        self.__correct += correct
 
     def addRecord(self, pro_id, state):
         for pro in self.__record:
@@ -159,6 +167,10 @@ class typeRecord:
         pro = problemRecord(self.__type, line)
         self.__record.append(pro)
         pro.addRecord(state)
+
+        self.__time += 1
+        if state == "correct":
+            self.__correct += 1
 
     def getType(self):
         return self.__type
@@ -173,3 +185,6 @@ class typeRecord:
             for j in range(4):
                 frame[ps.problem_record_list[j]].append(pro_frame[j])
         return frame
+
+    def getTimes(self):
+        return self.__time, self.__correct
