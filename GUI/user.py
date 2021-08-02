@@ -4,7 +4,7 @@ from PyQt5.QtGui import *
 
 global surface
 
-choose_list = ["历史各类题目正确率", "本次各类题目正确率"]
+choose_list = ["历史各类题目正确率", "本次各类题目正确率", "最近正确率统计"]
 
 
 class userInformationChooseSurface(Surface):
@@ -155,6 +155,8 @@ class userInformationSurface(Surface):
             self.F.draw0()
         elif choose == choose_list[1]:
             self.F.draw1()
+        elif choose == choose_list[2]:
+            self.F.draw2(self.username)
         self.group_layout.addWidget(self.F)
 
     def initUI(self):
