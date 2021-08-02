@@ -5,7 +5,6 @@ from PyQt5.QtGui import *
 from .surface import Surface
 from model import list as ls
 from model import problem as pr
-import matplotlib.pyplot as plt
 
 
 # recode the surface
@@ -289,6 +288,8 @@ class problemSurface(Surface):
         self.close()
         global surface
         surface = problemChooseSurface()
+        self.nameSignal.connect(surface.receive_nameSignal)
+        self.nameSignal.emit(self.username)
         surface.show()
 
     def user_but_clicked(self):

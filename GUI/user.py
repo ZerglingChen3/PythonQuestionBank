@@ -1,73 +1,16 @@
-import matplotlib
-
-matplotlib.use("Qt5Agg")
-
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.figure import Figure
-import matplotlib.pyplot as plt
 from .surface import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
-import numpy as np
 
 global surface
-
-
-class MyFigure(FigureCanvas):
-    def __init__(self, width=5, height=4, dpi=100):
-        # 第一步：创建一个创建Figure
-        self.fig = Figure(figsize=(width, height), dpi=dpi)
-        # 第二步：在父类中激活Figure窗口
-        super(MyFigure, self).__init__(self.fig)  # 此句必不可少，否则不能显示图形
-        # 第三步：创建一个子图，用于绘制图形用，111表示子图编号，如matlab的subplot(1,1,1)
-        self.axes = self.fig.add_subplot(111)
-
-    # 第四步：就是画图，【可以在此类中画，也可以在其它类中画】
-    def plotsin(self):
-        t = np.arange(0.0, 3.0, 0.01)
-        s = np.sin(2 * np.pi * t)
-        self.axes.plot(t, s)
-
-    def plotcos(self):
-        y = range(1, 17)
-
-        self.axes.bar(np.arange(16), y, alpha=0.5, width=0.3, color='yellow', edgecolor='red', label='The First Bar',
-                      lw=3)
-        self.axes.bar(np.arange(16) + 0.4, y, alpha=0.2, width=0.3, color='green', edgecolor='blue',
-                      label='The Second Bar',
-                      lw=3)
-        self.axes.legend()
-        # self.axes.plot(t, s)
-
-    def drawhist(self):
-        plt.rcParams['font.sans-serif'] = ['SimHei']
-        # mp.rcParams['axes.unicode_minus'] = False
-
-        apples = np.array([45, 46, 12, 45, 121, 65, 45, 60, 11, 56, 34, 54])
-        oranges = np.array([54, 36, 82, 47, 96, 34, 45, 62, 85, 66, 94, 63])
-        # plt.figure('Bar Chart', facecolor='lightgray')
-        # self.axes.set('Bar Chart', fontsize=16)
-        # self.axes.xlabel('Month', fontsize=14)
-        # self.axes.ylabel('Volume', fontsize=14)
-        self.axes.tick_params(labelsize=10)
-        self.axes.grid(linestyle=':', axis='y')
-        x = np.arange(12)
-        a = plt.bar(x - 0.2, apples, 0.4, color='dodgerblue', label='Apple', align='center')
-        b = plt.bar(x + 0.2, oranges, 0.4, color='orangered', label='Oranges', align='center')
-        # 设置标签
-        for i in a + b:
-            h = i.get_height()
-            self.axes.text(i.get_x() + i.get_width() / 2, h, '%d' % int(h), ha='center', va='bottom')
-        # self.axes.xticks(x, ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'])
-
-        # self.axes.legend()
-        # plt.show()
-
 
 choose_list = ["历史各类题目正确率"]
 
 
 class userInformationChooseSurface(Surface):
+    username = ""
+    personLabel = ""
+    nameSignal = pyqtSignal(str, str)
 
     def __init__(self):
         super().__init__()
@@ -86,15 +29,6 @@ class userInformationChooseSurface(Surface):
         self.list_but = QPushButton("确认")
 
         self.logout_but = QPushButton("注销")
-        """
-        self.figureBox_widget = QGroupBox()
-        self.figureBox_layout = QGridLayout()
-        self.figureBox_widget.setLayout(self.figureBox_layout)
-
-        self.F = MyFigure(width=3, height=2, dpi=100)
-        self.F.plotcos()
-        self.main_layout.addWidget(self.F, 0, 1, 3, 3)
-        """
 
         self.initLabel()
         self.initPos()
@@ -127,7 +61,6 @@ class userInformationChooseSurface(Surface):
         self.list.addItems(choose_list)
 
     def receive_nameSignal(self, name):
-        print("当前用户名为:" + str(name))
         self.username = name
         self.personLabel = QLabel("用户名：" + str(self.username))
         self.information_layout.addWidget(self.personLabel, 0, 0)
@@ -165,4 +98,58 @@ class userInformationChooseSurface(Surface):
         surface.show()
 
     def list_but_clicked(self):
-        return
+        choose = self.list.currentText()
+        self.close()
+        global surface
+        surface = userInformationSurface()
+        self.nameSignal.connect(surface.receive_nameSignal)
+        self.nameSignal.emit(self.username, choose)
+        surface.show()
+
+
+class userInformationSurface(Surface):
+    username = ""
+    personLabel = ""
+    choose = ""
+    nameSignal = pyqtSignal(str)
+
+    def __init__(self):
+        super().__init__()
+        self.information_widget, self.information_layout = getWidget()
+        self.logout_but = QPushButton("注销")
+
+    def initPos(self):
+        self.main_layout.addWidget(self.group_widget, 1, 0, 4, 4)
+
+    def receive_nameSignal(self, name, choose):
+        self.username = name
+        self.choose = choose
+        self.personLabel = QLabel("用户名：" + str(self.username))
+        self.information_layout.addWidget(self.personLabel, 0, 0)
+        self.information_layout.addWidget(self.logout_but, 1, 0)
+        self.group_widget, self.group_layout = getGroup(choose)
+        self.main_layout.addWidget(self.information_widget, 1, 5, 2, 2)
+        self.initPos()
+        self.initFigure()
+        self.initUI()
+
+    def initFigure(self):
+        from model import figure
+        self.F = figure.MyFigure(width=3, height=2, dpi=100)
+        self.F.draw1()
+        self.group_layout.addWidget(self.F)
+
+    def initUI(self):
+        self.resize(1080, 960)
+        self.setWindowTitle('小信题库')
+        self.setWindowIcon(QIcon('./pictures/shixiaoxin.jpg'))
+
+    def initEvent(self):
+        self.logout_but.clicked.connect(self.logout_but_clicked)
+
+    def logout_but_clicked(self):
+        from gui import login
+        global surface
+        surface = login.loginSurface()
+        surface.show()
+        self.close()
