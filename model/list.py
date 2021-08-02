@@ -10,3 +10,5 @@ global choose_problem_surface_list
 choose_problem_surface_list = []
 global problem_record
 problem_record = {}
+global current_record
+current_record = {}

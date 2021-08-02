@@ -306,27 +306,50 @@ class problemSurface(Surface):
         self.button_layout.addWidget(self.return_but, 0, 2)
 
     def submit_but_clicked(self):
+        import time
+        current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+
         sum_short = 0  # the sum of short answer problem
-        sum_tot = 0
+        sum_judge = 0
+        sum_judge_correct = 0
+        sum_single = 0
+        sum_single_correct = 0
         sum_correct = 0
         for pro in ls.choose_problem_show_list:
             state = "correct"
             if pro.getProType() == "简答题":
                 sum_short += 1
                 state = "can_not_judge"
-            else:
-                sum_tot += 1
+            elif pro.getProType() == "判断题":
+                sum_judge += 1
                 if pro.checkCorrect():
+                    sum_judge_correct += 1
+                    sum_correct += 1
+                else:
+                    state = "wrong"
+            elif pro.getProType() == "单选题":
+                sum_single += 1
+                if pro.checkCorrect():
+                    sum_single_correct += 1
                     sum_correct += 1
                 else:
                     state = "wrong"
             type_record = ls.problem_record[pro.getProType()]
             type_record.addRecord(pro.getId(), state)
 
+        ls.current_record = {}
+        ls.current_record["单选题"] = (sum_single, sum_single_correct)
+        ls.current_record["判断题"] = (sum_judge, sum_judge_correct)
+        ls.current_record["简答题"] = (sum_short)
+
+        from manage import person
+        person.addLog(self.username, current_time)
         print("#######################答题情况")
         print("简答题数量：" + str(sum_short))
-        print("非简答题数量：" + str(sum_tot))
-        print("非简答题正确数量：" + str(sum_correct))
+        print("单选题数量：" + str(sum_correct))
+        print("单选题数量：" + str(sum_correct))
+        print("单选题数量：" + str(sum_correct))
+        print("单选题数量：" + str(sum_correct))
         self.close()
 
         for pro in ls.choose_problem_show_list:

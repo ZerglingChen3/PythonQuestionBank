@@ -7,7 +7,33 @@ import pandas as pd
 problem_type = ["单选题", "判断题", "简答题"]
 
 global problem_record_list
-problem_record_list = ["题号", "答题次数", "错误次数", "错误率"]
+problem_record_list = ["题号", "答题次数", "正确次数", "正确率"]
+global log_head
+log_head = ["序号", "时间", "单选题数", "单选题正确数", "判断题数", "判断题正确数", "简答题数", "总题数", "总正确数"]
+
+
+def addLog(username, submit_time):
+    current_path = data_path + str(username)
+    current_excel = current_path + "/log.xlsx"
+    if not os.path.exists(current_excel):
+        df = pd.DataFrame({"序号": {}, "时间": {}, "单选题数": {}, "单选题正确数": {},
+                           "判断题数": {}, "判断题正确数": {}, "简答题数": {}, "总题数": {}, "总正确数": {}})
+        df.to_excel(current_excel, index=False)
+
+    df = pd.read_excel(current_excel)
+    cnt = df.shape[0]
+
+    ds = pd.DataFrame({"序号": [cnt + 1],
+                       "时间": [submit_time],
+                       "单选题数": [ls.current_record["单选题"][0]],
+                       "单选题正确数": [ls.current_record["单选题"][1]],
+                       "判断题数": [ls.current_record["判断题"][0]],
+                       "判断题正确数": [ls.current_record["判断题"][1]],
+                       "简答题数": [ls.current_record["简答题"]],
+                       "总题数": [ls.current_record["单选题"][0] + ls.current_record["判断题"][0]],
+                       "总正确数": [ls.current_record["单选题"][1] + ls.current_record["判断题"][1]]})
+    df = df.append(ds)
+    df.to_excel(current_excel, index=False, header=True)
 
 
 def appendPerson(new_person):
@@ -30,6 +56,7 @@ def changePassword(username, password):
     for user in ls.user_list:
         if user.getName() == username:
             user.changePassword(password)
+
 
 data_path = "./data/user/"
 

@@ -4,7 +4,7 @@ from PyQt5.QtGui import *
 
 global surface
 
-choose_list = ["历史各类题目正确率"]
+choose_list = ["历史各类题目正确率", "本次各类题目正确率"]
 
 
 class userInformationChooseSurface(Surface):
@@ -144,14 +144,17 @@ class userInformationSurface(Surface):
         self.main_layout.addWidget(self.information_widget, 1, 5, 2, 2)
 
         self.initPos()
-        self.initFigure()
+        self.initFigure(choose)
         self.initUI()
         self.initEvent()
 
-    def initFigure(self):
+    def initFigure(self, choose):
         from model import figure
         self.F = figure.MyFigure(width=3, height=2, dpi=100)
-        self.F.draw1()
+        if choose == choose_list[0]:
+            self.F.draw0()
+        elif choose == choose_list[1]:
+            self.F.draw1()
         self.group_layout.addWidget(self.F)
 
     def initUI(self):
