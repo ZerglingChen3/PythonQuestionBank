@@ -11,6 +11,7 @@ class userInformationChooseSurface(Surface):
     username = ""
     personLabel = ""
     nameSignal = pyqtSignal(str, str)
+    nameSignal2 = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
@@ -29,6 +30,7 @@ class userInformationChooseSurface(Surface):
         self.list_but = QPushButton("确认")
 
         self.logout_but = QPushButton("注销")
+        self.back_but = QPushButton("返回")
 
         self.initLabel()
         self.initPos()
@@ -65,7 +67,8 @@ class userInformationChooseSurface(Surface):
         self.personLabel = QLabel("用户名：" + str(self.username))
         self.information_layout.addWidget(self.personLabel, 0, 0)
         self.information_layout.addWidget(self.logout_but, 1, 0)
-        self.main_layout.addWidget(self.information_widget, 1, 5, 2, 2)
+        self.information_layout.addWidget(self.back_but, 2, 0)
+        self.main_layout.addWidget(self.information_widget, 1, 5, 3, 2)
 
     def initUI(self):
         self.resize(1080, 960)
@@ -76,6 +79,7 @@ class userInformationChooseSurface(Surface):
         self.logout_but.clicked.connect(self.logout_but_clicked)
         self.password_but.clicked.connect(self.password_but_clicked)
         self.list_but.clicked.connect(self.list_but_clicked)
+        self.back_but.clicked.connect(self.back_but_clicked)
 
     def logout_but_clicked(self):
         from .login import loginSurface
@@ -106,6 +110,15 @@ class userInformationChooseSurface(Surface):
         self.nameSignal.emit(self.username, choose)
         surface.show()
 
+    def back_but_clicked(self):
+        self.close()
+        global surface
+        from gui import problem
+        surface = problem.problemChooseSurface()
+        self.nameSignal2.connect(surface.receive_nameSignal)
+        self.nameSignal2.emit(self.username)
+        surface.show()
+
 
 class userInformationSurface(Surface):
     username = ""
@@ -116,7 +129,7 @@ class userInformationSurface(Surface):
     def __init__(self):
         super().__init__()
         self.information_widget, self.information_layout = getWidget()
-        self.logout_but = QPushButton("注销")
+        self.back_but = QPushButton("返回")
 
     def initPos(self):
         self.main_layout.addWidget(self.group_widget, 1, 0, 4, 4)
@@ -126,12 +139,14 @@ class userInformationSurface(Surface):
         self.choose = choose
         self.personLabel = QLabel("用户名：" + str(self.username))
         self.information_layout.addWidget(self.personLabel, 0, 0)
-        self.information_layout.addWidget(self.logout_but, 1, 0)
+        self.information_layout.addWidget(self.back_but, 1, 0)
         self.group_widget, self.group_layout = getGroup(choose)
         self.main_layout.addWidget(self.information_widget, 1, 5, 2, 2)
+
         self.initPos()
         self.initFigure()
         self.initUI()
+        self.initEvent()
 
     def initFigure(self):
         from model import figure
@@ -145,11 +160,12 @@ class userInformationSurface(Surface):
         self.setWindowIcon(QIcon('./pictures/shixiaoxin.jpg'))
 
     def initEvent(self):
-        self.logout_but.clicked.connect(self.logout_but_clicked)
+        self.back_but.clicked.connect(self.back_but_clicked)
 
-    def logout_but_clicked(self):
-        from gui import login
-        global surface
-        surface = login.loginSurface()
-        surface.show()
+    def back_but_clicked(self):
         self.close()
+        global surface
+        surface = userInformationChooseSurface()
+        self.nameSignal.connect(surface.receive_nameSignal)
+        self.nameSignal.emit(self.username)
+        surface.show()
