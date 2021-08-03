@@ -10,8 +10,7 @@ choose_list = ["历史各类题目正确率",
                "本次各类题目正确率",
                "最近正确率统计",
                "最近做题数目统计",
-               "历史各类题目比例",
-               "特定题目正确率查询"]
+               "历史各类题目比例"]
 
 pro_list = ['单选题', '填空题', '简答题']
 
@@ -122,8 +121,6 @@ class userInformationChooseSurface(Surface):
         for i in range(data.shape[0]):
             line = data.loc[i].values
             if int(line[0]) == int(id):
-                print(i)
-
                 ans = line[3]
                 break
         self.pro_ans.setParent(None)

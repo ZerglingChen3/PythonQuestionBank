@@ -113,6 +113,7 @@ class problemChooseSurface(Surface):
         self.checkBox1.setChecked(False)
         self.checkBox2.setChecked(False)
         self.checkBox3.setChecked(False)
+        self.difficult_text.setValue(0)
         self.num_text.setValue(0)
         return
 
@@ -370,10 +371,10 @@ class problemSurface(Surface):
         person.addLog(self.username, current_time)
         print("#######################答题情况")
         print("简答题数量：" + str(sum_short))
-        print("单选题数量：" + str(sum_correct))
-        print("单选题数量：" + str(sum_correct))
-        print("单选题数量：" + str(sum_correct))
-        print("单选题数量：" + str(sum_correct))
+        print("单选题数量：" + str(sum_single))
+        print("单选题正确数量：" + str(sum_single_correct))
+        print("判断题数量：" + str(sum_judge))
+        print("判断题正确数量：" + str(sum_judge_correct))
         self.close()
 
         for pro in ls.choose_problem_show_list:
