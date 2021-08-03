@@ -19,6 +19,9 @@ class problem:
         self.__solve = line[7]
         self.__type = type
 
+    def getId(self):
+        return self.__id
+
     def getType(self):
         return self.__type
 

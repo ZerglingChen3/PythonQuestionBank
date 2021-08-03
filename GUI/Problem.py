@@ -5,7 +5,7 @@ from PyQt5.QtGui import *
 from .surface import Surface
 from model import list as ls
 from model import problem as pr
-
+import pandas as pd
 
 # recode the surface
 global surface
@@ -33,6 +33,14 @@ class problemChooseSurface(Surface):
         self.information_layout = QGridLayout()
         self.information_widget.setLayout(self.information_layout)
 
+        self.difficult_widget = QGroupBox("难度选择")
+        self.difficult_layout = QGridLayout()
+        self.difficult_widget.setLayout(self.difficult_layout)
+
+        self.difficult_text = QSpinBox()
+        self.difficult_text.setMinimum(0)
+        self.difficult_text.setMaximum(4)
+        self.difficult_label = QLabel("等级:")
         self.headLabel = QLabel("题目选择")
 
         self.type_box_widget = QGroupBox("请选择题目类型")
@@ -74,10 +82,13 @@ class problemChooseSurface(Surface):
         self.button_layout.addWidget(self.reset_but, 0, 0)
         self.button_layout.addWidget(self.ok_but, 0, 1)
 
+        self.difficult_layout.addWidget(self.difficult_label, 0, 0)
+        self.difficult_layout.addWidget(self.difficult_text, 0, 1)
         self.main_layout.addWidget(self.headLabel, 0, 0, 9, 9)
         self.main_layout.addWidget(self.type_box_widget, 2, 3, 2, 3)
         self.main_layout.addWidget(self.num_box_widget, 4, 3, 2, 3)
-        self.main_layout.addWidget(self.button_widget, 6, 3, 1, 3)
+        self.main_layout.addWidget(self.difficult_widget, 6, 3, 1, 3)
+        self.main_layout.addWidget(self.button_widget, 7, 3, 1, 3)
 
     def initUI(self):
         self.resize(960, 720)
@@ -109,6 +120,7 @@ class problemChooseSurface(Surface):
         choose1 = self.checkBox1.isChecked()
         choose2 = self.checkBox2.isChecked()
         choose3 = self.checkBox3.isChecked()
+        difficult = int(self.difficult_text.text())
         value = self.num_text.value()
         if not choose1 and not choose2 and not choose3:
             QMessageBox.warning(self, '警告', "你没有选任何类型的题目！")
@@ -116,25 +128,37 @@ class problemChooseSurface(Surface):
         elif value == 0:
             QMessageBox.warning(self, '警告', "你没有选任何的题目！")
             return
-        prob_cnt = choose1 * len(ls.problem_list["单选题"]) + \
-                   choose2 * len(ls.problem_list["判断题"]) + \
-                   choose3 * len(ls.problem_list["简答题"])
+        ls.choose_problem_list.clear()
+        if choose1:
+            ls.choose_problem_list.extend(ls.problem_list["单选题"])
+        if choose2:
+            ls.choose_problem_list.extend(ls.problem_list["判断题"])
+        if choose3:
+            ls.choose_problem_list.extend(ls.problem_list["简答题"])
+
+        pro_list = []
+        for pro in ls.choose_problem_list:
+            pro_difficult = 4
+            data_path = "./data/user/"
+            current_path = data_path + str(self.username)
+            current_excel = current_path + "/data.xlsx"
+            data = pd.read_excel(current_excel, sheet_name=pro.getType())
+            for i in range(data.shape[0]):
+                line = data.loc[i].values
+                if int(line[0]) == pro.getId():
+                    pro_difficult = 4 - line[3] / 0.25
+                    break
+            if pro_difficult >= difficult:
+                pro_list.append(pro)
+
+        ls.choose_problem_list = pro_list
+        prob_cnt = len(pro_list)
 
         if value > prob_cnt:
             QMessageBox.warning(self, '警告', "你选择的题目数量过多！")
             return
 
         print("#######################题目信息")
-        ls.choose_problem_list.clear()
-        if choose1:
-            ls.choose_problem_list.extend(ls.problem_list["单选题"])
-            print("有单选题!")
-        if choose2:
-            ls.choose_problem_list.extend(ls.problem_list["判断题"])
-            print("有判断题!")
-        if choose3:
-            ls.choose_problem_list.extend(ls.problem_list["简答题"])
-            print("有简答题!")
         random.shuffle(ls.choose_problem_list)
         ls.choose_problem_list = ls.choose_problem_list[0:value]
         print("题目数量是：" + str(value))
