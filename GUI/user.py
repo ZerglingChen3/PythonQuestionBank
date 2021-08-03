@@ -1,10 +1,19 @@
 from .surface import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
+from model import list as ls
+import pandas as pd
 
 global surface
 
-choose_list = ["历史各类题目正确率", "本次各类题目正确率", "最近正确率统计"]
+choose_list = ["历史各类题目正确率",
+               "本次各类题目正确率",
+               "最近正确率统计",
+               "最近做题数目统计",
+               "历史各类题目比例",
+               "特定题目正确率查询"]
+
+pro_list = ['单选题', '填空题', '简答题']
 
 
 class userInformationChooseSurface(Surface):
@@ -21,6 +30,7 @@ class userInformationChooseSurface(Surface):
         self.password_button_widget, self.password_button_layout = getWidget()
         self.combobox_widget, self.combobox_layout = getWidget()
         self.data_group_widget, self.data_group_layout = getGroup("查看个人数据")
+        self.prob_group_widget, self.prob_group_layout = getGroup("查看题目数据")
 
         self.password_label = QLabel("新密码：")
         self.password_text = QLineEdit()
@@ -28,6 +38,16 @@ class userInformationChooseSurface(Surface):
 
         self.list = QComboBox()
         self.list_but = QPushButton("确认")
+
+        self.prob_list = QComboBox()
+        self.num_text = QSpinBox()
+        self.num_text.setMinimum(1)
+        prob_cnt = len(ls.problem_list["单选题"]) + \
+                   len(ls.problem_list["判断题"]) + \
+                   len(ls.problem_list["简答题"])
+        self.num_text.setMaximum(prob_cnt)
+        self.pro_but = QPushButton("确认")
+        self.pro_ans = QLabel("历史正确率:")
 
         self.logout_but = QPushButton("注销")
         self.back_but = QPushButton("返回")
@@ -58,9 +78,15 @@ class userInformationChooseSurface(Surface):
         self.main_layout.addWidget(self.data_group_widget, 4, 0, 2, 4)
         self.data_group_layout.addWidget(self.list, 0, 0)
         self.data_group_layout.addWidget(self.list_but, 1, 0)
+        self.main_layout.addWidget(self.prob_group_widget, 6, 0, 3, 4)
+        self.prob_group_layout.addWidget(self.prob_list, 0, 0)
+        self.prob_group_layout.addWidget(self.num_text, 0, 1)
+        self.prob_group_layout.addWidget(self.pro_but, 1, 0)
+        self.prob_group_layout.addWidget(self.pro_ans, 2, 0)
 
     def initList(self):
         self.list.addItems(choose_list)
+        self.prob_list.addItems(pro_list)
 
     def receive_nameSignal(self, name):
         self.username = name
@@ -80,6 +106,29 @@ class userInformationChooseSurface(Surface):
         self.password_but.clicked.connect(self.password_but_clicked)
         self.list_but.clicked.connect(self.list_but_clicked)
         self.back_but.clicked.connect(self.back_but_clicked)
+        self.pro_but.clicked.connect(self.pro_but_clicked)
+
+    def pro_but_clicked(self):
+        Type = self.prob_list.currentText()
+        id = self.num_text.text()
+        value = len(ls.problem_list[Type])
+        if int(id) > value:
+            QMessageBox.warning(self, '警告', "题目编号不合法，请重新输入！")
+        data_path = "./data/user/"
+        current_path = data_path + str(self.username)
+        current_excel = current_path + "/data.xlsx"
+        data = pd.read_excel(current_excel, sheet_name=Type)
+        ans = 0
+        for i in range(data.shape[0]):
+            line = data.loc[i].values
+            if int(line[0]) == int(id):
+                print(i)
+
+                ans = line[3]
+                break
+        self.pro_ans.setParent(None)
+        self.pro_ans = QLabel('历史正确率为: {:.2%}'.format(ans))
+        self.prob_group_layout.addWidget(self.pro_ans, 2, 0)
 
     def logout_but_clicked(self):
         from .login import loginSurface
@@ -157,6 +206,10 @@ class userInformationSurface(Surface):
             self.F.draw1()
         elif choose == choose_list[2]:
             self.F.draw2(self.username)
+        elif choose == choose_list[3]:
+            self.F.draw3(self.username)
+        elif choose == choose_list[4]:
+            self.F.draw4(self.username)
         self.group_layout.addWidget(self.F)
 
     def initUI(self):

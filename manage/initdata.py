@@ -14,7 +14,7 @@ problem_type = ["单选题", "判断题", "简答题"]
 def user_init():
     global user_path
     if not os.path.exists(user_path):
-        df = pd.DataFrame({"序号": {}, "姓名": {}, "密码": {}, "权限": {}})
+        df = pd.DataFrame({"序号": {"1"}, "姓名": {"admin"}, "密码": {"1234"}, "权限": {"admin"}})
         df.to_excel(user_path, index=False)
     data = pd.read_excel(user_path)
 

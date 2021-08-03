@@ -146,8 +146,11 @@ class registerSurface(Surface):
         self.re_pwdLabel = QLabel("确认密码：")
 
         self.unameText = QLineEdit("")
+        self.unameText.setMaxLength(12)
         self.pwdText = QLineEdit("")
+        self.pwdText.setMaxLength(12)
         self.re_pwdText = QLineEdit("")
+        self.re_pwdText.setMaxLength(12)
 
         self.back_but = QPushButton("返回")
         self.register_but = QPushButton("注册")

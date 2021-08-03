@@ -184,7 +184,7 @@ class problemChooseSurface(Surface):
         self.personLabel = QLabel("用户名：" + str(self.username))
         self.information_layout.addWidget(self.personLabel, 0, 0)
         self.information_layout.addWidget(self.logout_but, 1, 0)
-        self.main_layout.addWidget(self.information_widget, 1, 5, 1, 2)
+        self.main_layout.addWidget(self.information_widget, 1, 6, 1, 2)
 
 
 class problemSurface(Surface):
